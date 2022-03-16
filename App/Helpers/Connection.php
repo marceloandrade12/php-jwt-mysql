@@ -1,6 +1,5 @@
 <?php
 
-
 class Connection
 {
 
@@ -11,7 +10,7 @@ class Connection
         try {
             self::$instance = new \PDO(DBDRIVE . ': host=' . DBHOST . '; dbname=' . DBNAME, DBUSER, DBPASS);
         } catch (PDOException $e) {
-            echo "MySql Connection Error: " . $e->getMessage();
+            throw new \Exception('Database Connection Error');
         }
     }
 
