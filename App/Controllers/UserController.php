@@ -1,15 +1,20 @@
 <?php
 
-namespace App\Models;
+namespace App\Controllers;
 
 require_once('./App/Helpers/Connection.php');
 
-class User
+class UserController
 {
     private static $table = 'user';
 
     public static function select(int $id)
     {
+        if (!AuthController::checkAuth()) {
+            http_response_code(401);
+            throw new \Exception("NOT_AUTHENTICATED");
+        }
+
         $connPdo = \Connection::getInstance();
 
         $sql = 'SELECT id, name, email FROM ' . self::$table . ' WHERE id = :id';
@@ -26,6 +31,12 @@ class User
 
     public static function selectAll()
     {
+
+        if (!AuthController::checkAuth()) {
+            http_response_code(401);
+            throw new \Exception("NOT_AUTHENTICATED");
+        }
+
         $connPdo = \Connection::getInstance();
 
         $sql = 'SELECT id, name, email FROM ' . self::$table;
@@ -41,6 +52,10 @@ class User
 
     public static function insert($data)
     {
+        if (!AuthController::checkAuth()) {
+            http_response_code(401);
+            throw new \Exception("NOT_AUTHENTICATED");
+        }
 
         // validate if has data
         if (
@@ -57,7 +72,7 @@ class User
             $sql = 'INSERT INTO ' . self::$table . ' (email, password, name) VALUES (:em, :pa, :na)';
             $stmt = $connPdo->prepare($sql);
             $stmt->bindValue(':em', $data['email']);
-            $stmt->bindValue(':pa', $data['password']);
+            $stmt->bindValue(':pa', password_hash($data['password'], PASSWORD_DEFAULT));
             $stmt->bindValue(':na', $data['name']);
             $stmt->execute();
 
@@ -73,6 +88,11 @@ class User
 
     public static function update($data, $id = null)
     {
+        if (!AuthController::checkAuth()) {
+            http_response_code(401);
+            throw new \Exception("NOT_AUTHENTICATED");
+        }
+
         // validate if has data
         if (
             isset($data['password']) &&
@@ -102,6 +122,11 @@ class User
 
     public static function delete($id = null)
     {
+        if (!AuthController::checkAuth()) {
+            http_response_code(401);
+            throw new \Exception("NOT_AUTHENTICATED");
+        }
+
         // validate if has data
         if (isset($id)) {
             $connPdo = \Connection::getInstance();

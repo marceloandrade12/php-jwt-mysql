@@ -2,32 +2,48 @@
 
 namespace App\Services;
 
-use App\Models\User;
+use App\Controllers\UserController;
 
 class UserService
 {
+    public function getAll()
+    {
+
+        return UserController::selectAll();
+    }
+
     public function get($id = null)
     {
         if ($id) {
-            return User::select($id);
+            return UserController::select($id);
         } else {
-            return User::selectAll();
+            throw new \Exception('Missing Params');
         }
     }
 
-    public function post($id = null)
+    public function add()
     {
         $data = $_POST;
+        return UserController::insert($data);
+    }
+
+    public function update($id = null)
+    {
 
         if ($id) {
-            return User::update($data, $id);
+            $data = $_POST;
+            return UserController::update($data, $id);
         } else {
-            return User::insert($data);
+            throw new \Exception('Missing Params');
         }
     }
 
     public function delete($id = null)
     {
-        return User::delete($id);
+        if ($id) {
+            return UserController::delete($id);
+        } else {
+            throw new \Exception('Missing Params');
+        }
     }
 }
